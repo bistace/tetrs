@@ -17,7 +17,7 @@ impl Interface {
         Self { engine }
     }
 
-    pub fn run(self) {
+    pub fn run(&self) {
         todo!("Not implemented")
     }
 }

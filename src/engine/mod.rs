@@ -1,7 +1,7 @@
 mod board;
 mod tetrimino;
 
-use crate::engine::tetrimino::TType;
+use crate::engine::tetrimino::{TType, Tetrimino};
 use board::Board;
 use rand::prelude::{SliceRandom, ThreadRng};
 
@@ -9,6 +9,7 @@ pub struct Engine {
     board: Board,
     bag: Vec<TType>,
     rng: ThreadRng,
+    cursor: Option<Tetrimino>,
 }
 
 impl Engine {
@@ -17,11 +18,12 @@ impl Engine {
             board: Board::empty(),
             bag: Vec::new(),
             rng: rand::thread_rng(),
+            cursor: None,
         }
     }
 
     // Generates a new bag and shuffles it
-    pub fn regen_bag(&mut self) {
+    fn regen_bag(&mut self) {
         debug_assert!(self.bag.is_empty());
         self.fill_bag();
         self.shuffle_bag();
@@ -36,4 +38,6 @@ impl Engine {
     fn shuffle_bag(&mut self) {
         self.bag.shuffle(&mut self.rng);
     }
+
+    fn place_cursor(&mut self) {}
 }
