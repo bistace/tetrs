@@ -1,4 +1,5 @@
-pub enum CellState {
+#[derive(Clone, Copy)]
+pub(crate) enum CellState {
     Empty,
     Occupied,
 }
