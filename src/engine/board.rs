@@ -17,4 +17,3 @@ impl Board {
         Self([CellState::Empty; Self::CELL_COUNT])
     }
 }
-

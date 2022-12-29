@@ -14,9 +14,7 @@ impl Interface {
 
     // Constructs a new Interface with a user-defined engine
     pub fn with_engine(engine: Engine) -> Self {
-        Self {
-            engine,
-        }
+        Self { engine }
     }
 
     pub fn run(self) {
