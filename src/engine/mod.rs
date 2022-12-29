@@ -1,9 +1,14 @@
 mod board;
+use board::*;
 
-struct Engine;
+struct Engine {
+    board: Board,
+}
 
 impl Engine {
     fn new() -> Self {
-        Self {}
+        Self {
+            board: Board::empty(),
+        }
     }
 }
