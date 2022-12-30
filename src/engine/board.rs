@@ -1,6 +1,6 @@
 use cgmath::Vector2;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) enum CellState {
     Empty,
     Occupied,
@@ -21,6 +21,17 @@ impl Board {
 
     pub fn is_inside(coords: Vector2<usize>) -> bool {
         coords.x < Self::WIDTH && coords.y < Self::HEIGHT
+    }
+
+    pub fn get_mut(&mut self, coord: Vector2<usize>) -> Option<&mut CellState> {
+        if Self::is_inside(coord) {
+            return Some(&mut self.0[Self::coord_index(coord)]);
+        }
+        None
+    }
+
+    pub fn coord_index(coord: Vector2<usize>) -> usize {
+        coord.y * Self::WIDTH + coord.x
     }
 }
 

@@ -4,6 +4,7 @@ mod tetrimino;
 use crate::engine::tetrimino::{TType, Tetrimino};
 use board::Board;
 use rand::prelude::{SliceRandom, ThreadRng};
+use crate::engine::board::CellState;
 
 pub struct Engine {
     board: Board,
@@ -39,5 +40,14 @@ impl Engine {
         self.bag.shuffle(&mut self.rng);
     }
 
-    fn place_cursor(&mut self) {}
+    fn place_cursor(&mut self) {
+        let cursor = self.cursor.take().expect("Called 'place_cursor' with a pieceless cursor");
+        while let Some(cells) = cursor.cells() {
+            for coord in cells {
+                let tetrimino = self.board.get_mut(coord).expect("Tried to get an out-of-bounds Tetrimino");
+                debug_assert_eq!(*tetrimino, CellState::Empty);
+                *tetrimino = CellState::Occupied;
+            }
+        }
+    }
 }
