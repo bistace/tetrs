@@ -1,6 +1,6 @@
-use cgmath::Vector2;
 use crate::engine::board::Board;
 use crate::engine::{Coordinate, Offset};
+use cgmath::Vector2;
 
 pub(super) struct Tetrimino {
     ttype: TType,
@@ -21,12 +21,14 @@ impl Tetrimino {
 
     pub fn cells(&self) -> Option<[Coordinate; Self::CELL_COUNT]> {
         // Rotates and moves the cells
-        let offsets: [Offset; 4] = self.ttype.cells()
-            .map(|cell| cell * self.rotation)
+        let offsets: [Offset; 4] = self
+            .ttype
+            .cells()
+            .map(|cell| self.rotate(cell))
             .map(|cell| cell + self.position);
 
         let mut coords: [Coordinate; 4] = [Coordinate::new(0, 0); 4];
-        for(Offset{x, y}, coord) in offsets.into_iter().zip(&mut coords) {
+        for (Offset { x, y }, coord) in offsets.into_iter().zip(&mut coords) {
             // Negatives bound-checking
             let tmp = match (x.try_into(), y.try_into()) {
                 (Ok(x), Ok(y)) => Coordinate::new(x, y),
@@ -42,6 +44,15 @@ impl Tetrimino {
         }
 
         Some(coords)
+    }
+
+    fn rotate(&self, cell: Offset) -> Offset {
+        if self.ttype == TType::O {
+            cell
+        } else {
+            let grid_offset = self.rotation.intrinsic_offset() * (self.ttype.grid_size() - 1);
+            cell * self.rotation + grid_offset
+        }
     }
 }
 
@@ -69,40 +80,59 @@ impl TType {
 
     fn cells(&self) -> [Offset; Tetrimino::CELL_COUNT] {
         match self {
-            TType::O => &[( 0, 0), ( 0, 1), (1, 0), (1, 1)],
-            TType::I => &[(-1, 0), ( 0, 0), (1, 0), (2, 0)],
-            TType::T => &[(-1, 0), ( 0, 0), (1, 0), (0, 1)],
-            TType::J => &[(-1, 1), (-1, 0), (0, 0), (1, 0)],
-            TType::L => &[(-1, 0), ( 0, 0), (1, 0), (1, 1)],
-            TType::S => &[(-1, 0), ( 0, 0), (0, 1), (1, 1)],
-            TType::Z => &[(-1, 1), ( 0, 1), (0, 0), (1, 0)],
-        }.map(Vector2::<isize>::from)
+            TType::O => &[(1, 1), (1, 2), (2, 1), (2, 2)],
+            TType::I => &[(0, 2), (1, 2), (2, 2), (3, 2)],
+            TType::T => &[(0, 1), (1, 1), (2, 1), (1, 2)],
+            TType::L => &[(0, 1), (1, 1), (2, 1), (2, 2)],
+            TType::J => &[(0, 2), (0, 1), (1, 1), (2, 2)],
+            TType::S => &[(0, 1), (1, 1), (1, 2), (2, 2)],
+            TType::Z => &[(0, 2), (1, 2), (1, 1), (2, 1)],
+        }
+        .map(Vector2::<isize>::from)
+    }
+
+    pub fn grid_size(&self) -> isize {
+        match self {
+            TType::I => 4,
+            _ => 3,
+        }
     }
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub(crate) enum Rotation {
     N,
-    S,
     E,
+    S,
     W,
 }
 
-impl<S> std::ops::Mul<Rotation> for Vector2<S>
-where S: std::ops::Neg<Output=S> {
-    type Output = Self;
-
-    fn mul(self, rotation: Rotation) -> Self::Output {
-
-        match rotation {
-            Rotation::N => self,
-            Rotation::S => Vector2::new(-self.x, -self.y),
-            Rotation::E => Vector2::new( self.y, -self.x),
-            Rotation::W => Vector2::new(-self.y,  self.x)
+impl Rotation {
+    fn intrinsic_offset(&self) -> Offset {
+        match self {
+            Rotation::N => Offset::new(0, 0),
+            Rotation::E => Offset::new(0, 1),
+            Rotation::S => Offset::new(1, 1),
+            Rotation::W => Offset::new(1, 0),
         }
     }
 }
 
+impl<S> std::ops::Mul<Rotation> for Vector2<S>
+where
+    S: std::ops::Neg<Output = S>,
+{
+    type Output = Self;
+
+    fn mul(self, rotation: Rotation) -> Self::Output {
+        match rotation {
+            Rotation::N => self,
+            Rotation::E => Vector2::new(self.y, -self.x),
+            Rotation::S => Vector2::new(-self.x, -self.y),
+            Rotation::W => Vector2::new(-self.y, self.x),
+        }
+    }
+}
 
 #[cfg(test)]
 mod test {
@@ -110,26 +140,42 @@ mod test {
 
     #[test]
     fn position_s_tetrimino() {
-        let s_north = Tetrimino {ttype: TType::S, position: Offset::new(2, 3), rotation: Rotation::N};
-        let s_south = Tetrimino {ttype: TType::S, position: Offset::new(2, 3), rotation: Rotation::S};
-        let s_east = Tetrimino {ttype: TType::S, position: Offset::new(2, 3), rotation: Rotation::E};
-        let s_west = Tetrimino {ttype: TType::S, position: Offset::new(2, 3), rotation: Rotation::W};
+        let s_north = Tetrimino {
+            ttype: TType::S,
+            position: Offset::new(2, 3),
+            rotation: Rotation::N,
+        };
+        let s_east = Tetrimino {
+            ttype: TType::S,
+            position: Offset::new(2, 3),
+            rotation: Rotation::E,
+        };
+        let s_south = Tetrimino {
+            ttype: TType::S,
+            position: Offset::new(2, 3),
+            rotation: Rotation::S,
+        };
+        let s_west = Tetrimino {
+            ttype: TType::S,
+            position: Offset::new(2, 3),
+            rotation: Rotation::W,
+        };
 
         assert_eq!(
             s_north.cells(),
-            Some([(1, 3), (2, 3), (2, 4), (3, 4)].map(Coordinate::from))
-        );
-        assert_eq!(
-            s_south.cells(),
-            Some([(3, 3), (2, 3), (2, 2), (1, 2)].map(Coordinate::from))
+            Some([(2, 4), (3, 4), (3, 5), (4, 5)].map(Coordinate::from))
         );
         assert_eq!(
             s_east.cells(),
-            Some([(2, 4), (2, 3), (3, 3), (3, 2)].map(Coordinate::from))
+            Some([(3, 5), (3, 4), (4, 4), (4, 3)].map(Coordinate::from))
+        );
+        assert_eq!(
+            s_south.cells(),
+            Some([(4, 4), (3, 4), (3, 3), (2, 3)].map(Coordinate::from))
         );
         assert_eq!(
             s_west.cells(),
-            Some([(2, 2), (2, 3), (1, 3), (1, 4)].map(Coordinate::from))
+            Some([(3, 3), (3, 4), (2, 4), (2, 5)].map(Coordinate::from))
         );
     }
 }

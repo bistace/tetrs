@@ -1,15 +1,13 @@
 mod board;
 mod tetrimino;
 
+use crate::engine::board::CellState;
 use crate::engine::tetrimino::{TType, Tetrimino};
 use board::Board;
 use rand::prelude::{SliceRandom, ThreadRng};
-use crate::engine::board::CellState;
-
 
 type Coordinate = cgmath::Point2<usize>;
 type Offset = cgmath::Vector2<isize>;
-
 
 pub struct Engine {
     board: Board,
@@ -46,10 +44,16 @@ impl Engine {
     }
 
     fn place_cursor(&mut self) {
-        let cursor = self.cursor.take().expect("Called 'place_cursor' with a pieceless cursor");
+        let cursor = self
+            .cursor
+            .take()
+            .expect("Called 'place_cursor' with a pieceless cursor");
         while let Some(cells) = cursor.cells() {
             for coord in cells {
-                let tetrimino = self.board.get_mut(coord).expect("Tried to get an out-of-bounds Tetrimino");
+                let tetrimino = self
+                    .board
+                    .get_mut(coord)
+                    .expect("Tried to get an out-of-bounds Tetrimino");
                 debug_assert_eq!(*tetrimino, CellState::Empty);
                 *tetrimino = CellState::Occupied;
             }

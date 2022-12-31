@@ -35,7 +35,6 @@ impl Board {
     }
 }
 
-
 #[cfg(test)]
 mod test {
     use super::*;
