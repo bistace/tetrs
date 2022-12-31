@@ -6,6 +6,10 @@ use board::Board;
 use rand::prelude::{SliceRandom, ThreadRng};
 use crate::engine::board::CellState;
 
+
+type Coordinate = cgmath::Point2<usize>;
+
+
 pub struct Engine {
     board: Board,
     bag: Vec<TType>,

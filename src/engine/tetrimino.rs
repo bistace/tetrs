@@ -1,5 +1,6 @@
 use cgmath::Vector2;
 use crate::engine::board::Board;
+use crate::engine::Coordinate;
 
 pub(super) struct Tetrimino {
     ttype: TType,
@@ -18,17 +19,17 @@ impl Tetrimino {
         }
     }
 
-    pub fn cells(&self) -> Option<[Vector2<usize>; Self::CELL_COUNT]> {
+    pub fn cells(&self) -> Option<[Coordinate; Self::CELL_COUNT]> {
         // Rotates and moves the cells
         let offsets: [Vector2<isize>; 4] = self.ttype.cells()
             .map(|cell| cell * self.rotation)
             .map(|cell| cell + self.position);
 
-        let mut coords: [Vector2<usize>; 4] = [Vector2::<usize>::new(0, 0); 4];
+        let mut coords: [Coordinate; 4] = [Coordinate::new(0, 0); 4];
         for(Vector2::<isize>{x, y}, coord) in offsets.into_iter().zip(&mut coords) {
             // Negatives bound-checking
             let tmp = match (x.try_into(), y.try_into()) {
-                (Ok(x), Ok(y)) => Vector2::<usize>::new(x, y),
+                (Ok(x), Ok(y)) => Coordinate::new(x, y),
                 _ => return None,
             };
 
@@ -116,19 +117,19 @@ mod test {
 
         assert_eq!(
             s_north.cells(),
-            Some([(1, 3), (2, 3), (2, 4), (3, 4)].map(Vector2::<usize>::from))
+            Some([(1, 3), (2, 3), (2, 4), (3, 4)].map(Coordinate::from))
         );
         assert_eq!(
             s_south.cells(),
-            Some([(3, 3), (2, 3), (2, 2), (1, 2)].map(Vector2::<usize>::from))
+            Some([(3, 3), (2, 3), (2, 2), (1, 2)].map(Coordinate::from))
         );
         assert_eq!(
             s_east.cells(),
-            Some([(2, 4), (2, 3), (3, 3), (3, 2)].map(Vector2::<usize>::from))
+            Some([(2, 4), (2, 3), (3, 3), (3, 2)].map(Coordinate::from))
         );
         assert_eq!(
             s_west.cells(),
-            Some([(2, 2), (2, 3), (1, 3), (1, 4)].map(Vector2::<usize>::from))
+            Some([(2, 2), (2, 3), (1, 3), (1, 4)].map(Coordinate::from))
         );
     }
 }

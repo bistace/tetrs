@@ -1,4 +1,4 @@
-use cgmath::Vector2;
+use crate::engine::Coordinate;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) enum CellState {
@@ -19,18 +19,18 @@ impl Board {
         Self([CellState::Empty; Self::CELL_COUNT])
     }
 
-    pub fn is_inside(coords: Vector2<usize>) -> bool {
+    pub fn is_inside(coords: Coordinate) -> bool {
         coords.x < Self::WIDTH && coords.y < Self::HEIGHT
     }
 
-    pub fn get_mut(&mut self, coord: Vector2<usize>) -> Option<&mut CellState> {
+    pub fn get_mut(&mut self, coord: Coordinate) -> Option<&mut CellState> {
         if Self::is_inside(coord) {
             return Some(&mut self.0[Self::coord_index(coord)]);
         }
         None
     }
 
-    pub fn coord_index(coord: Vector2<usize>) -> usize {
+    pub fn coord_index(coord: Coordinate) -> usize {
         coord.y * Self::WIDTH + coord.x
     }
 }
@@ -42,9 +42,9 @@ mod test {
 
     #[test]
     fn bounds_check() {
-        let coords_out_x = Vector2::<usize>::new(10, 9);
-        let coords_out_y = Vector2::<usize>::new(9, 20);
-        let coords_in = Vector2::<usize>::new(9, 19);
+        let coords_out_x = Coordinate::new(10, 9);
+        let coords_out_y = Coordinate::new(9, 20);
+        let coords_in = Coordinate::new(9, 19);
 
         assert_eq!(Board::is_inside(coords_out_x), false);
         assert_eq!(Board::is_inside(coords_out_y), false);
