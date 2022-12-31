@@ -1,17 +1,17 @@
 use cgmath::Vector2;
 use crate::engine::board::Board;
-use crate::engine::Coordinate;
+use crate::engine::{Coordinate, Offset};
 
 pub(super) struct Tetrimino {
     ttype: TType,
-    position: Vector2<isize>,
+    position: Offset,
     rotation: Rotation,
 }
 
 impl Tetrimino {
     pub const CELL_COUNT: usize = 4;
 
-    pub fn new(ttype: TType, position: Vector2<isize>, rotation: Rotation) -> Self {
+    pub fn new(ttype: TType, position: Offset, rotation: Rotation) -> Self {
         Self {
             ttype,
             position,
@@ -21,12 +21,12 @@ impl Tetrimino {
 
     pub fn cells(&self) -> Option<[Coordinate; Self::CELL_COUNT]> {
         // Rotates and moves the cells
-        let offsets: [Vector2<isize>; 4] = self.ttype.cells()
+        let offsets: [Offset; 4] = self.ttype.cells()
             .map(|cell| cell * self.rotation)
             .map(|cell| cell + self.position);
 
         let mut coords: [Coordinate; 4] = [Coordinate::new(0, 0); 4];
-        for(Vector2::<isize>{x, y}, coord) in offsets.into_iter().zip(&mut coords) {
+        for(Offset{x, y}, coord) in offsets.into_iter().zip(&mut coords) {
             // Negatives bound-checking
             let tmp = match (x.try_into(), y.try_into()) {
                 (Ok(x), Ok(y)) => Coordinate::new(x, y),
@@ -67,7 +67,7 @@ impl TType {
         Self::Z,
     ];
 
-    fn cells(&self) -> [Vector2<isize>; Tetrimino::CELL_COUNT] {
+    fn cells(&self) -> [Offset; Tetrimino::CELL_COUNT] {
         match self {
             TType::O => &[( 0, 0), ( 0, 1), (1, 0), (1, 1)],
             TType::I => &[(-1, 0), ( 0, 0), (1, 0), (2, 0)],
@@ -110,10 +110,10 @@ mod test {
 
     #[test]
     fn position_s_tetrimino() {
-        let s_north = Tetrimino {ttype: TType::S, position: Vector2::new(2, 3), rotation: Rotation::N};
-        let s_south = Tetrimino {ttype: TType::S, position: Vector2::new(2, 3), rotation: Rotation::S};
-        let s_east = Tetrimino {ttype: TType::S, position: Vector2::new(2, 3), rotation: Rotation::E};
-        let s_west = Tetrimino {ttype: TType::S, position: Vector2::new(2, 3), rotation: Rotation::W};
+        let s_north = Tetrimino {ttype: TType::S, position: Offset::new(2, 3), rotation: Rotation::N};
+        let s_south = Tetrimino {ttype: TType::S, position: Offset::new(2, 3), rotation: Rotation::S};
+        let s_east = Tetrimino {ttype: TType::S, position: Offset::new(2, 3), rotation: Rotation::E};
+        let s_west = Tetrimino {ttype: TType::S, position: Offset::new(2, 3), rotation: Rotation::W};
 
         assert_eq!(
             s_north.cells(),

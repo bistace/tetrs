@@ -8,6 +8,7 @@ use crate::engine::board::CellState;
 
 
 type Coordinate = cgmath::Point2<usize>;
+type Offset = cgmath::Vector2<isize>;
 
 
 pub struct Engine {
