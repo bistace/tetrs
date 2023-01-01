@@ -36,9 +36,9 @@ impl Board {
     }
 
     pub fn is_clipping(&self, tetrimino: &Tetrimino) -> bool {
-        let Some(cells) = tetrimino.cells() else {return false};
+        let Some(cells) = tetrimino.cells() else {return true};
         cells.into_iter().all(|coords| {
-            !Board::is_inside(coords) || self.0[Self::coord_index(coords)] == CellState::Empty
+            !Board::is_inside(coords) || self.0[Self::coord_index(coords)] == CellState::Occupied
         })
     }
 

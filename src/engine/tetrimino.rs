@@ -1,5 +1,5 @@
 use crate::engine::board::Board;
-use crate::engine::{Coordinate, Offset};
+use crate::engine::{Coordinate, MoveDirection, Offset};
 use cgmath::Vector2;
 
 #[derive(Debug)]
@@ -17,6 +17,14 @@ impl Tetrimino {
             ttype,
             position,
             rotation,
+        }
+    }
+
+    pub fn from_direction(tetrimino: &Tetrimino, direction: &MoveDirection) -> Self {
+        Self {
+            ttype: tetrimino.ttype,
+            position: tetrimino.position + direction.offset(),
+            rotation: tetrimino.rotation,
         }
     }
 
