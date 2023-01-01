@@ -37,7 +37,7 @@ impl Tetrimino {
             };
 
             // Checks that the coords are not superior to the maximum value of x or y
-            if Board::is_inside(tmp) {
+            if Board::is_valid_coord(tmp) {
                 *coord = tmp;
             } else {
                 return None;

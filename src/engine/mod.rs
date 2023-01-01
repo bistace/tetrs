@@ -49,16 +49,15 @@ impl Engine {
             .take()
             .expect("Called 'place_cursor' with a pieceless cursor");
 
-        if !self.board.can_be_placed(&cursor) {
-            panic!("Tried to place a cursor at an invalid position: {:?}", cursor);
-        }
+        assert!(
+            self.board.can_be_placed(&cursor),
+            "Tried to place a cursor at an invalid position: {:?}",
+            cursor,
+        );
 
         while let Some(cells) = cursor.cells() {
             for coord in cells {
-                let tetrimino = self
-                    .board
-                    .get_mut(coord)
-                    .unwrap();
+                let tetrimino = self.board.get_mut(coord).unwrap();
                 debug_assert_eq!(*tetrimino, CellState::Empty);
                 *tetrimino = CellState::Occupied;
             }
@@ -74,12 +73,11 @@ impl Engine {
         let future_tetrimino =
             Tetrimino::new(cursor.ttype, cursor.position + offset, cursor.rotation);
 
-        if future_tetrimino.cells().is_some() {
-            *cursor = future_tetrimino;
-        } else {
+        if self.board.is_clipping(&future_tetrimino) {
             return Err(());
         }
 
+        *cursor = future_tetrimino;
         Ok(())
     }
 }
