@@ -48,12 +48,17 @@ impl Engine {
             .cursor
             .take()
             .expect("Called 'place_cursor' with a pieceless cursor");
+
+        if !self.board.can_be_placed(&cursor) {
+            panic!("Tried to place a cursor at an invalid position: {:?}", cursor);
+        }
+
         while let Some(cells) = cursor.cells() {
             for coord in cells {
                 let tetrimino = self
                     .board
                     .get_mut(coord)
-                    .expect("Tried to get an out-of-bounds Tetrimino");
+                    .unwrap();
                 debug_assert_eq!(*tetrimino, CellState::Empty);
                 *tetrimino = CellState::Occupied;
             }

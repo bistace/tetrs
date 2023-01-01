@@ -26,9 +26,9 @@ impl Board {
 
     pub fn can_be_placed(&self, tetrimino: &Tetrimino) -> bool{
         let Some(cells) = tetrimino.cells() else {return false};
-        cells.iter()
+        cells.into_iter()
             .all(|coords| {
-                self.0[Self::coord_index(*coords)] == CellState::Empty
+                self.0[Self::coord_index(coords)] == CellState::Empty
                 }
             );
         true

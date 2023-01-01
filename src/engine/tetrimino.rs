@@ -2,6 +2,7 @@ use crate::engine::board::Board;
 use crate::engine::{Coordinate, Offset};
 use cgmath::Vector2;
 
+#[derive(Debug)]
 pub struct Tetrimino {
     pub ttype: TType,
     pub position: Offset,
