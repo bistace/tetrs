@@ -1,4 +1,5 @@
 use crate::engine::Coordinate;
+use crate::engine::tetrimino::Tetrimino;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) enum CellState {
@@ -21,6 +22,16 @@ impl Board {
 
     pub fn is_inside(coords: Coordinate) -> bool {
         coords.x < Self::WIDTH && coords.y < Self::HEIGHT
+    }
+
+    pub fn can_be_placed(&self, tetrimino: &Tetrimino) -> bool{
+        let Some(cells) = tetrimino.cells() else {return false};
+        cells.iter()
+            .all(|coords| {
+                self.0[Self::coord_index(*coords)] == CellState::Empty
+                }
+            );
+        true
     }
 
     pub fn get_mut(&mut self, coord: Coordinate) -> Option<&mut CellState> {

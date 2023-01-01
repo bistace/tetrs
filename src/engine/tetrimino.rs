@@ -2,10 +2,10 @@ use crate::engine::board::Board;
 use crate::engine::{Coordinate, Offset};
 use cgmath::Vector2;
 
-pub(super) struct Tetrimino {
-    ttype: TType,
-    position: Offset,
-    rotation: Rotation,
+pub struct Tetrimino {
+    pub ttype: TType,
+    pub position: Offset,
+    pub rotation: Rotation,
 }
 
 impl Tetrimino {
@@ -57,7 +57,7 @@ impl Tetrimino {
 }
 
 #[derive(Debug, PartialEq, Copy, Clone)]
-pub(crate) enum TType {
+pub enum TType {
     O,
     I,
     T,
@@ -100,7 +100,7 @@ impl TType {
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
-pub(crate) enum Rotation {
+pub enum Rotation {
     N,
     E,
     S,

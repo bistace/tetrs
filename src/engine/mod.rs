@@ -59,4 +59,36 @@ impl Engine {
             }
         }
     }
+
+    fn move_cursor(&mut self, direction: &MoveDirection) -> Result<(), ()> {
+        let Some(cursor) =  self.cursor.as_mut() else {
+            return Ok(());
+        };
+
+        let offset = direction.offset();
+        let future_tetrimino =
+            Tetrimino::new(cursor.ttype, cursor.position + offset, cursor.rotation);
+
+        if future_tetrimino.cells().is_some() {
+            *cursor = future_tetrimino;
+        } else {
+            return Err(());
+        }
+
+        Ok(())
+    }
+}
+
+pub enum MoveDirection {
+    Left,
+    Right,
+}
+
+impl MoveDirection {
+    fn offset(&self) -> Offset {
+        match self {
+            MoveDirection::Left => Offset::new(-1, 0),
+            MoveDirection::Right => Offset::new(1, 0),
+        }
+    }
 }
