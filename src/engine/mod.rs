@@ -51,8 +51,7 @@ impl Engine {
 
         assert!(
             self.board.can_be_placed(&cursor),
-            "Tried to place a cursor at an invalid position: {:?}",
-            cursor,
+            "Tried to place a cursor at an invalid position: {cursor:?}"
         );
 
         while let Some(cells) = cursor.cells() {
@@ -64,10 +63,8 @@ impl Engine {
         }
     }
 
-    // Moves the cursor left or right, panics lf bottom is given
+    // Moves the cursor in any MoveDirection
     fn move_cursor(&mut self, direction: &MoveDirection) -> Result<(), ()> {
-        assert!(*direction != MoveDirection::Bottom);
-
         let Some(cursor) = self.cursor.as_mut() else { return Ok(()); };
         let future_tetrimino = Tetrimino::from_direction(cursor, direction);
 
@@ -75,13 +72,12 @@ impl Engine {
             return Err(());
         }
 
-        *cursor = future_tetrimino;
-        Ok(())
+        Ok(*cursor = future_tetrimino)
     }
 
     // Drops the cursor by one cell down
-    fn soft_drop(&mut self) -> Result<(), ()> {
-        todo!()
+    pub fn soft_drop(&mut self) -> Result<(), ()> {
+        self.move_cursor(&MoveDirection::Bottom)
     }
 
     // Checks that the cursor did not hit the bottom of the board or another piece
@@ -91,8 +87,11 @@ impl Engine {
         self.board.is_clipping(&future_tetrimino)
     }
 
-    fn hard_drop(&mut self) {
-        todo!()
+    pub fn hard_drop(&mut self) {
+        while self.move_cursor(&MoveDirection::Bottom).is_ok() {
+            continue;
+        }
+        self.place_cursor();
     }
 }
 
