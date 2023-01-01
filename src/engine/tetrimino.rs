@@ -106,6 +106,18 @@ impl TType {
             _ => 3,
         }
     }
+
+    pub fn color(&self) -> Color {
+        match self {
+            TType::O => Color::Yellow,
+            TType::I => Color::Cyan,
+            TType::T => Color::Purple,
+            TType::J => Color::Blue,
+            TType::L => Color::Orange,
+            TType::S => Color::Green,
+            TType::Z => Color::Red,
+        }
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
@@ -141,6 +153,17 @@ where
             Rotation::W => Vector2::new(-self.y, self.x),
         }
     }
+}
+
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub enum Color {
+    Yellow,
+    Cyan,
+    Purple,
+    Orange,
+    Blue,
+    Green,
+    Red,
 }
 
 #[cfg(test)]

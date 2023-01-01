@@ -1,7 +1,6 @@
 mod board;
 mod tetrimino;
 
-use crate::engine::board::CellState;
 use crate::engine::tetrimino::{TType, Tetrimino};
 use board::Board;
 use rand::prelude::{SliceRandom, ThreadRng};
@@ -56,9 +55,7 @@ impl Engine {
 
         while let Some(cells) = cursor.cells() {
             for coord in cells {
-                let tetrimino = self.board.get_mut(coord).unwrap();
-                debug_assert_eq!(*tetrimino, CellState::Empty);
-                *tetrimino = CellState::Occupied;
+                self.board[coord] = Some(cursor.ttype.color());
             }
         }
     }
